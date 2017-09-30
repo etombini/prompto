@@ -6,8 +6,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	"gopkg.in/src-d/go-git.v4/plumbing"
+
 	git "gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
 
 //Git handles configuration to provide printable prompt information
@@ -126,26 +127,37 @@ func tag() string {
 	if !isGit() {
 		return ""
 	}
+	if t, ok := gitInfo["tag"]; ok {
+		return t
+	}
 
 	path := rootDir()
 	repo, err := git.PlainOpen(path)
 	if err != nil {
+		gitInfo["tag"] = ""
 		return ""
 	}
 	head, err := repo.Head()
 	if err != nil {
+		gitInfo["tag"] = ""
 		return ""
 	}
 
-	var tagMap = make(map[string]string)
+	tt, _ := repo.Tags()
+	tagref := make(map[string]string)
 
-	tags, err := repo.TagObjects()
-	tags.ForEach(func(t *object.Tag) error {
-		tagMap[t.Target.String()] = t.Name
+	tt.ForEach(func(p *plumbing.Reference) error {
+		to, err := repo.TagObject(p.Hash())
+		if err != nil {
+			tagref[p.Hash().String()] = strings.TrimPrefix(p.Name().String(), "refs/tags/")
+			return nil
+		}
+		tagref[to.Target.String()] = to.Name
 		return nil
 	})
 
-	if len(tagMap) == 0 {
+	if len(tagref) == 0 {
+		gitInfo["tag"] = ""
 		return ""
 	}
 
@@ -154,12 +166,13 @@ func tag() string {
 	var ok bool
 
 	for headCommit.NumParents() > 0 {
-		if theTag, ok = tagMap[headCommit.Hash.String()]; ok {
+		if theTag, ok = tagref[headCommit.Hash.String()]; ok {
 			break
 		}
 		theTag = ""
 		headCommit, err = repo.CommitObject(headCommit.ParentHashes[0])
 	}
+	gitInfo["tag"] = theTag
 	return theTag
 }
 
@@ -168,11 +181,6 @@ func isTag() bool {
 		return true
 	}
 	return false
-}
-
-//GetIndex returns the index of the Prompter
-func (g Git) GetIndex() int {
-	return g.Index
 }
 
 //GetSide returns the side of the Prompter
@@ -189,29 +197,25 @@ func (g Git) Prompt() (string, int, error) {
 		return "", 0, nil
 	}
 	prompt := ""
-	if fgcolor, ok := ForegroundColor16[g.Fgcolor]; ok {
-		prompt += fgcolor
-	}
-	if bgcolor, ok := BackgroundColor16[g.Bgcolor]; ok {
-		prompt += bgcolor
-	}
+	prompt += bashForegroundColor(g.Fgcolor)
+	prompt += bashBackgroundColor(g.Bgcolor)
 	if font, ok := Font[g.Font]; ok {
 		prompt += font
 	}
 
 	promptWithoutColor := g.Before
-	promptWithoutColor += g.BranchBefore
-	promptWithoutColor += branch()
-	promptWithoutColor += g.BranchAfter
-
-	if isTag() {
-		promptWithoutColor += g.TagBefore
-		promptWithoutColor += tag()
-		promptWithoutColor += g.TagAfter
+	if b := branch(); b != "" {
+		promptWithoutColor += g.BranchBefore
+		promptWithoutColor += b
+		promptWithoutColor += g.BranchAfter
 	}
 
+	if t := tag(); t != "" {
+		promptWithoutColor += g.TagBefore
+		promptWithoutColor += t
+		promptWithoutColor += g.TagAfter
+	}
 	promptWithoutColor += g.After
-
 	prompt += promptWithoutColor
 
 	return prompt, RealLen(promptWithoutColor), nil

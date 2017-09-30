@@ -17,11 +17,6 @@ type Username struct {
 	Font    string `yaml:"font"`
 }
 
-//GetIndex returns the index of the Prompter
-func (u Username) GetIndex() int {
-	return u.Index
-}
-
 //GetSide returns the side of the Prompter
 func (u Username) GetSide() string {
 	if u.Side == "" || u.Side != "right" {
@@ -33,12 +28,8 @@ func (u Username) GetSide() string {
 //Prompt return the resulting string and its real length when written
 func (u Username) Prompt() (string, int, error) {
 	prompt := ""
-	if fgcolor, ok := ForegroundColor16[u.Fgcolor]; ok {
-		prompt += fgcolor
-	}
-	if bgcolor, ok := BackgroundColor16[u.Bgcolor]; ok {
-		prompt += bgcolor
-	}
+	prompt += bashForegroundColor(u.Fgcolor)
+	prompt += bashBackgroundColor(u.Bgcolor)
 	if font, ok := Font[u.Font]; ok {
 		prompt += font
 	}
@@ -57,5 +48,4 @@ func (u Username) Prompt() (string, int, error) {
 	prompt += u.After
 
 	return prompt, RealLen(u.Before + username + u.After), nil
-
 }

@@ -2,18 +2,27 @@ package prompter
 
 import (
 	"fmt"
+	"strconv"
 )
 
-func bashForegroundColor(code int) string {
-	if code >= 0 && code < 256 {
-		return fmt.Sprintf("\\[\\e[38;5;%dm\\]", code)
+func bashForegroundColor(code string) string {
+	c, err := strconv.Atoi(code)
+	if err == nil && c >= 0 && c < 256 {
+		return fmt.Sprintf("\\[\\e[38;5;%dm\\]", c)
+	}
+	if color, ok := ForegroundColor16[code]; ok {
+		return color
 	}
 	return ""
 }
 
-func bashBackgroundColor(code int) string {
-	if code >= 0 && code < 256 {
-		return fmt.Sprintf("\\[\\e[48;5;%dm\\]", code)
+func bashBackgroundColor(code string) string {
+	c, err := strconv.Atoi(code)
+	if err == nil && c >= 0 && c < 256 {
+		return fmt.Sprintf("\\[\033[48;5;%sm\\]", code)
+	}
+	if color, ok := BackgroundColor16[code]; ok {
+		return color
 	}
 	return ""
 }
@@ -59,6 +68,8 @@ var BackgroundColor16 = map[string]string{
 	"light-cyan":    "\\[\\e[106m\\]",
 	"white":         "\\[\\e[107m\\]",
 }
+
+var bashReset = "\\[\\e[0m\\]"
 
 //Font is a map associating font format with its ANSI escape sequence to
 var Font = map[string]string{

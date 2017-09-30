@@ -30,7 +30,7 @@ func main() {
 	lines := loadYAML(os.Args[1])
 
 	for _, line := range lines.Lines {
-		l := line.String()
-		fmt.Printf("%s", l)
+		//l := line.String()
+		fmt.Printf("%s", line)
 	}
 }

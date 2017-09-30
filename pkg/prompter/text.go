@@ -10,11 +10,6 @@ type Text struct {
 	Font    string `yaml:"font"`
 }
 
-//GetIndex returns the index of the Prompter
-func (t Text) GetIndex() int {
-	return t.Index
-}
-
 //GetSide returns the side of the Prompter
 func (t Text) GetSide() string {
 	if t.Side == "" || t.Side != "right" {
@@ -26,12 +21,8 @@ func (t Text) GetSide() string {
 //Prompt return the string to be written on the screen and its proper length
 func (t Text) Prompt() (string, int, error) {
 	prompt := ""
-	if fgcolor, ok := ForegroundColor16[t.Fgcolor]; ok {
-		prompt += fgcolor
-	}
-	if bgcolor, ok := BackgroundColor16[t.Bgcolor]; ok {
-		prompt += bgcolor
-	}
+	prompt += bashForegroundColor(t.Fgcolor)
+	prompt += bashBackgroundColor(t.Bgcolor)
 	if font, ok := Font[t.Font]; ok {
 		prompt += font
 	}

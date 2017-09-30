@@ -10,11 +10,6 @@ type TextIfNotGit struct {
 	Font    string `yaml:"font"`
 }
 
-//GetIndex returns the index of the Prompter
-func (t TextIfNotGit) GetIndex() int {
-	return t.Index
-}
-
 //GetSide returns the side of the Prompter
 func (t TextIfNotGit) GetSide() string {
 	if t.Side == "" || t.Side != "right" {

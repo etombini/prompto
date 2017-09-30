@@ -28,12 +28,10 @@ func (h Hostname) GetSide() string {
 //Prompt return the resulting string and its real length when written
 func (h Hostname) Prompt() (string, int, error) {
 	prompt := ""
-	if fgcolor, ok := ForegroundColor16[h.Fgcolor]; ok {
-		prompt += fgcolor
-	}
-	if bgcolor, ok := BackgroundColor16[h.Bgcolor]; ok {
-		prompt += bgcolor
-	}
+
+	prompt += bashForegroundColor(h.Fgcolor)
+	prompt += bashBackgroundColor(h.Bgcolor)
+
 	if font, ok := Font[h.Font]; ok {
 		prompt += font
 	}

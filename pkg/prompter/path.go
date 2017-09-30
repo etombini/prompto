@@ -20,11 +20,6 @@ type Path struct {
 	Font      string `yaml:"font"`
 }
 
-//GetIndex returns the index of the Prompter
-func (p Path) GetIndex() int {
-	return p.Index
-}
-
 //GetSide returns the side of the Prompter
 func (p Path) GetSide() string {
 	if p.Side == "" || p.Side != "right" {
@@ -104,13 +99,8 @@ func (p Path) Prompt() (string, int, error) {
 	}
 
 	var prompt string
-
-	if fgcolor, ok := ForegroundColor16[p.Fgcolor]; ok {
-		prompt += fgcolor
-	}
-	if bgcolor, ok := BackgroundColor16[p.Bgcolor]; ok {
-		prompt += bgcolor
-	}
+	prompt += bashForegroundColor(p.Fgcolor)
+	prompt += bashBackgroundColor(p.Bgcolor)
 	if font, ok := Font[p.Font]; ok {
 		prompt += font
 	}
