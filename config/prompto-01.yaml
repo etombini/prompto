@@ -1,0 +1,74 @@
+lines:
+    - line:
+        - prompter:
+          hostname:
+              before: "  | "
+              after: " "
+              bgcolor: 17
+              fgcolor: default
+              side: left
+        - prompter: 
+          text: 
+            content: ""
+            bgcolor: 19
+            fgcolor: 17
+            side: left
+        - prompter:
+          username:
+              before: "  | "
+              after: " "
+              bgcolor: 19
+              fgcolor: default
+              font: bold
+              side: left
+        - prompter: 
+          text: 
+            content: ""
+            bgcolor: 238
+            fgcolor: 19
+            side: left
+        - prompter:
+          path:
+            before: "  | "
+            after: " "
+            mode: default
+            bgcolor: 238
+            fgcolor: default
+            separator: "/"
+            side: left
+        - prompter: 
+          text: 
+            content: " "
+            bgcolor: default
+            fgcolor: 238
+            side: left
+        - prompter: 
+          ifgit: 
+            content: ""
+            bgcolor: default
+            fgcolor: 52
+            side: right
+        - prompter: 
+          ifnotgit: 
+            content: " "
+            bgcolor: default
+            side: right
+        - prompter:
+          git:
+            before: "   | "
+            after: " "
+            branch_before: "  "
+            branch_after: " "
+            tag_before: "  "
+            tag_after: " "
+            fgcolor: default
+            bgcolor: 52
+            side: right
+    - line:
+        - prompter:
+          text: 
+            content: " • "
+            bgcolor: default
+            fgcolor: default
+            side: left
+            font: bold
