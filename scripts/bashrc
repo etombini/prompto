@@ -1,0 +1,10 @@
+# PROMPT CONFIGURATION
+
+
+function _update_ps1(){
+    PS1="$(/path/to/prompto /path/to/configuration/.prompto.yaml)"
+}
+
+if [ "$TERM" != "linux" ]; then
+    PROMPT_COMMAND="_update_ps1; $PROMPT_COMMAND"
+fi
