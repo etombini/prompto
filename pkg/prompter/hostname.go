@@ -3,6 +3,7 @@ package prompter
 import (
 	"fmt"
 	"os"
+	"strings"
 )
 
 //Hostname handles configuration to provide printable prompt information
@@ -43,7 +44,7 @@ func (h Hostname) Prompt() (string, int, error) {
 	}
 
 	prompt += h.Before
-	prompt += hostname
+	prompt += strings.Split(hostname, ".")[0]
 	prompt += h.After
 
 	return prompt, RealLen(h.Before + hostname + h.After), nil
