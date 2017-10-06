@@ -42,9 +42,10 @@ func (h Hostname) Prompt() (string, int, error) {
 		fmt.Fprintf(os.Stderr, "Can not get current user\n")
 		hostname = "ERROR"
 	}
+	hostname = strings.Split(hostname, ".")[0]
 
 	prompt += h.Before
-	prompt += strings.Split(hostname, ".")[0]
+	prompt += hostname
 	prompt += h.After
 
 	return prompt, RealLen(h.Before + hostname + h.After), nil
