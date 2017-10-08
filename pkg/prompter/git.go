@@ -22,15 +22,15 @@ type Git struct {
 	Bgcolor string `yaml:"bgcolor"`
 	Font    string `yaml:"font"`
 
-	BranchBefore string `yaml:"branch_before"`
-	BranchAfter  string `yaml:"branch_after"`
-	// BranchFgcolor string `yaml:"branch_fgcolor"`
-	// BranchBgcolor string `yaml:"branch_bgcolor"`
+	BranchBefore  string `yaml:"branch_before"`
+	BranchAfter   string `yaml:"branch_after"`
+	BranchFgcolor string `yaml:"branch_fgcolor"`
+	BranchBgcolor string `yaml:"branch_bgcolor"`
 
-	TagBefore string `yaml:"tag_before"`
-	TagAfter  string `yaml:"tag_after"`
-	// TagFgcolor string `yaml:"tag_fgcolor"`
-	// TagBgcolor string `yaml:"tag_bgcolor"`
+	TagBefore  string `yaml:"tag_before"`
+	TagAfter   string `yaml:"tag_after"`
+	TagFgcolor string `yaml:"tag_fgcolor"`
+	TagBgcolor string `yaml:"tag_bgcolor"`
 
 	// StatusCleanText string `yaml:"status_clean_text"`
 	// // StatusCleanFgColor string `yaml:"status_clean_fgcolor"`
@@ -191,11 +191,79 @@ func (g Git) GetSide() string {
 	return "right"
 }
 
+func (g Git) branchPrompt() (string, int, error) {
+	if !isGit() {
+		return "", 0, nil
+	}
+
+	fgColor := g.BranchFgcolor
+	if fgColor == "" {
+		fgColor = g.Fgcolor
+	}
+	bgColor := g.BranchBgcolor
+	if bgColor == "" {
+		bgColor = g.Bgcolor
+	}
+
+	prompt := ""
+	prompt += bashForegroundColor(fgColor)
+	prompt += bashBackgroundColor(bgColor)
+	if font, ok := Font[g.Font]; ok {
+		prompt += font
+	}
+
+	promptWithoutColor := ""
+	if b := branch(); b != "" {
+		promptWithoutColor += g.BranchBefore
+		promptWithoutColor += b
+		promptWithoutColor += g.BranchAfter
+	}
+	prompt += promptWithoutColor
+	prompt += Font["reset"]
+
+	return prompt, RealLen(promptWithoutColor), nil
+}
+
+func (g Git) tagPrompt() (string, int, error) {
+	if !isGit() {
+		return "", 0, nil
+	}
+
+	fgColor := g.TagFgcolor
+	if fgColor == "" {
+		fgColor = g.Fgcolor
+	}
+	bgColor := g.TagBgcolor
+	if bgColor == "" {
+		bgColor = g.Bgcolor
+	}
+
+	prompt := ""
+	prompt += bashForegroundColor(fgColor)
+	prompt += bashBackgroundColor(bgColor)
+	if font, ok := Font[g.Font]; ok {
+		prompt += font
+	}
+
+	promptWithoutColor := ""
+	if t := tag(); t != "" {
+		promptWithoutColor += g.TagBefore
+		promptWithoutColor += t
+		promptWithoutColor += g.TagAfter
+	}
+	prompt += promptWithoutColor
+	prompt += Font["reset"]
+
+	return prompt, RealLen(promptWithoutColor), nil
+}
+
 //Prompt return the resulting string and its real length when written
 func (g Git) Prompt() (string, int, error) {
 	if !isGit() {
 		return "", 0, nil
 	}
+
+	length := 0
 	prompt := ""
 	prompt += bashForegroundColor(g.Fgcolor)
 	prompt += bashBackgroundColor(g.Bgcolor)
@@ -203,21 +271,23 @@ func (g Git) Prompt() (string, int, error) {
 		prompt += font
 	}
 
-	promptWithoutColor := g.Before
-	if b := branch(); b != "" {
-		promptWithoutColor += g.BranchBefore
-		promptWithoutColor += b
-		promptWithoutColor += g.BranchAfter
+	prompt += g.Before
+	length += RealLen(g.Before)
+	bp, bl, err := g.branchPrompt()
+	if err == nil {
+		prompt += bp
+		length += bl
 	}
 
-	if t := tag(); t != "" {
-		promptWithoutColor += g.TagBefore
-		promptWithoutColor += t
-		promptWithoutColor += g.TagAfter
+	tp, tl, err := g.tagPrompt()
+	if err == nil {
+		prompt += tp
+		length += tl
 	}
-	promptWithoutColor += g.After
-	prompt += promptWithoutColor
 
-	return prompt, RealLen(promptWithoutColor), nil
+	prompt += g.After
+	length += RealLen(g.After)
+
+	return prompt, length, nil
 
 }
