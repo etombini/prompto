@@ -32,13 +32,13 @@ type Git struct {
 	TagFgcolor string `yaml:"tag_fgcolor"`
 	TagBgcolor string `yaml:"tag_bgcolor"`
 
-	// StatusCleanText string `yaml:"status_clean_text"`
-	// // StatusCleanFgColor string `yaml:"status_clean_fgcolor"`
-	// // StatusCleanBgColor string `yaml:"status_clean_bgcolor"`
+	StatusCleanText    string `yaml:"status_clean_text"`
+	StatusCleanFgColor string `yaml:"status_clean_fgcolor"`
+	StatusCleanBgColor string `yaml:"status_clean_bgcolor"`
 
-	// StatusDirtyText string `yaml:"status_dirty_text"`
-	// // StatusDirtyFgColor string `yaml:"status_dirty_fgcolor"`
-	// // StatusDirtyBgColor string `yaml:"status_dirty_bgcolor"`
+	StatusDirtyText    string `yaml:"status_dirty_text"`
+	StatusDirtyFgColor string `yaml:"status_dirty_fgcolor"`
+	StatusDirtyBgColor string `yaml:"status_dirty_bgcolor"`
 
 	// ModifiedBefore string `yaml:"modified_before"`
 	// ModifiedAfter  string `yaml:"modified_after"`
@@ -183,6 +183,30 @@ func isTag() bool {
 	return false
 }
 
+func isClean() bool {
+	if !isGit() {
+		return true
+	}
+
+	path := rootDir()
+	repo, err := git.PlainOpen(path)
+	if err != nil {
+		return true
+	}
+
+	wt, err := repo.Worktree()
+	if err != nil {
+		return true
+	}
+
+	s, err := wt.Status()
+	if err != nil {
+		return true
+	}
+
+	return s.IsClean()
+}
+
 //GetSide returns the side of the Prompter
 func (g Git) GetSide() string {
 	if g.Side == "" || g.Side != "right" {
@@ -257,6 +281,42 @@ func (g Git) tagPrompt() (string, int, error) {
 	return prompt, RealLen(promptWithoutColor), nil
 }
 
+func (g Git) cleanPrompt() (string, int, error) {
+	if !isGit() {
+		return "", 0, nil
+	}
+
+	prompt := ""
+
+	text := g.StatusCleanText
+
+	fgColor := g.StatusCleanFgColor
+	bgColor := g.StatusCleanBgColor
+
+	if !isClean() {
+		text = g.StatusDirtyText
+		fgColor = g.StatusDirtyFgColor
+		bgColor = g.StatusDirtyBgColor
+	}
+
+	if fgColor == "" {
+		fgColor = g.Fgcolor
+	}
+	if bgColor == "" {
+		bgColor = g.Bgcolor
+	}
+
+	prompt += bashForegroundColor(fgColor)
+	prompt += bashBackgroundColor(bgColor)
+	if font, ok := Font[g.Font]; ok {
+		prompt += font
+	}
+	prompt += text
+	prompt += Font["reset"]
+
+	return prompt, RealLen(text), nil
+}
+
 //Prompt return the resulting string and its real length when written
 func (g Git) Prompt() (string, int, error) {
 	if !isGit() {
@@ -277,6 +337,12 @@ func (g Git) Prompt() (string, int, error) {
 	if err == nil {
 		prompt += bp
 		length += bl
+	}
+
+	cp, cl, err := g.cleanPrompt()
+	if err == nil {
+		prompt += cp
+		length += cl
 	}
 
 	tp, tl, err := g.tagPrompt()
