@@ -98,19 +98,6 @@ func (p Path) Prompt() (string, int, error) {
 		path = strings.Join(splitted, p.Separator)
 	}
 
-	var prompt string
-	prompt += bashForegroundColor(p.Fgcolor)
-	prompt += bashBackgroundColor(p.Bgcolor)
-	if font, ok := Font[p.Font]; ok {
-		prompt += font
-	}
-
-	pathLen := RealLen(p.Before)
-	prompt += p.Before
-	pathLen += RealLen(path)
-	prompt += path
-	pathLen += RealLen(p.After)
-	prompt += p.After
-
-	return prompt, pathLen, nil
+	path = p.Before + path + p.After
+	return colorString(path, p.Fgcolor, p.Bgcolor, p.Font), RealLen(path), nil
 }

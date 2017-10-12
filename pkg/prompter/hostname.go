@@ -28,25 +28,13 @@ func (h Hostname) GetSide() string {
 
 //Prompt return the resulting string and its real length when written
 func (h Hostname) Prompt() (string, int, error) {
-	prompt := ""
-
-	prompt += bashForegroundColor(h.Fgcolor)
-	prompt += bashBackgroundColor(h.Bgcolor)
-
-	if font, ok := Font[h.Font]; ok {
-		prompt += font
-	}
-
 	hostname, err := os.Hostname()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Can not get current user\n")
 		hostname = "ERROR"
 	}
 	hostname = strings.Split(hostname, ".")[0]
+	hostname = h.Before + hostname + h.After
 
-	prompt += h.Before
-	prompt += hostname
-	prompt += h.After
-
-	return prompt, RealLen(h.Before + hostname + h.After), nil
+	return colorString(hostname, h.Fgcolor, h.Bgcolor, h.Font), RealLen(hostname), nil
 }

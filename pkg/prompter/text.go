@@ -20,14 +20,5 @@ func (t Text) GetSide() string {
 
 //Prompt return the string to be written on the screen and its proper length
 func (t Text) Prompt() (string, int, error) {
-	prompt := ""
-	prompt += bashForegroundColor(t.Fgcolor)
-	prompt += bashBackgroundColor(t.Bgcolor)
-	if font, ok := Font[t.Font]; ok {
-		prompt += font
-	}
-
-	prompt += t.Content
-
-	return prompt, RealLen(t.Content), nil
+	return colorString(t.Content, t.Fgcolor, t.Bgcolor, t.Font), RealLen(t.Content), nil
 }

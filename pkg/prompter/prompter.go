@@ -86,11 +86,9 @@ func (l Line) String() string {
 		}
 		if p.GetSide() == "left" {
 			left += prompt
-			left += Font["reset"]
 			leftLength += len
 		} else {
 			right += prompt
-			right += Font["reset"]
 			rightLength += len
 		}
 

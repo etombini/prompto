@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -27,7 +28,20 @@ func loadYAML(filename string) *prompter.Config {
 }
 
 func main() {
-	lines := loadYAML(os.Args[1])
+
+	config := flag.String("config", "~/.prompto.yaml", "Configuration file")
+	help := flag.Bool("help", false, "Get some help")
+	shell := flag.String("shell", "bash", "Define the shell used (bash, zsh, fish)")
+
+	flag.Parse()
+
+	if *help {
+		flag.PrintDefaults()
+		os.Exit(0)
+	}
+
+	prompter.SetShell(*shell)
+	lines := loadYAML(*config)
 
 	for _, line := range lines.Lines {
 		//l := line.String()

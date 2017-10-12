@@ -27,13 +27,6 @@ func (u Username) GetSide() string {
 
 //Prompt return the resulting string and its real length when written
 func (u Username) Prompt() (string, int, error) {
-	prompt := ""
-	prompt += bashForegroundColor(u.Fgcolor)
-	prompt += bashBackgroundColor(u.Bgcolor)
-	if font, ok := Font[u.Font]; ok {
-		prompt += font
-	}
-
 	username := ""
 	user, err := user.Current()
 	if err != nil {
@@ -43,9 +36,6 @@ func (u Username) Prompt() (string, int, error) {
 		username = user.Username
 	}
 
-	prompt += u.Before
-	prompt += username
-	prompt += u.After
-
-	return prompt, RealLen(u.Before + username + u.After), nil
+	username = u.Before + username + u.After
+	return colorString(username, u.Fgcolor, u.Bgcolor, u.Font), RealLen(username), nil
 }
