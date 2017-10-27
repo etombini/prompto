@@ -40,15 +40,13 @@ type Git struct {
 	StatusDirtyFgColor string `yaml:"status_dirty_fgcolor"`
 	StatusDirtyBgColor string `yaml:"status_dirty_bgcolor"`
 
-	// ModifiedBefore string `yaml:"modified_before"`
-	// ModifiedAfter  string `yaml:"modified_after"`
-	// // ModifiedFgColor string `yaml:"modified_fgcolor"`
-	// // ModifiedBgColor string `yaml:"modified_bgcolor"`
+	UntrackedText    string `yaml:"untracked_text"`
+	UntrackedFgColor string `yaml:"untracked_fgcolor"`
+	UntrackedBgColor string `yaml:"untracked_bgcolor"`
 
-	// StagedBefore string `yaml:"staged_before"`
-	// StagedAfter  string `yaml:"staged_after"`
-	// // StagedFgColor string `yaml:"staged_fgcolor"`
-	// StagedBgColor string `yaml:"staged_bgcolor"`
+	StagedText    string `yaml:"staged_text"`
+	StagedFgColor string `yaml:"staged_fgcolor"`
+	StagedBgColor string `yaml:"staged_bgcolor"`
 }
 
 var gitInfo = make(map[string]string)
@@ -183,28 +181,89 @@ func isTag() bool {
 	return false
 }
 
+func hasUntracked() bool {
+	if !isGit() {
+		return false
+	}
+	path := rootDir()
+	repo, err := git.PlainOpen(path)
+	if err != nil {
+		return false
+	}
+	wt, err := repo.Worktree()
+	if err != nil {
+		return false
+	}
+	status, err := wt.Status()
+	if err != nil {
+		return false
+	}
+	for _, s := range status {
+		if s.Staging == git.Untracked || s.Worktree == git.Untracked {
+			return true
+		}
+	}
+	return false
+}
+
+func hasStaged() bool {
+	if !isGit() {
+		return false
+	}
+	path := rootDir()
+	repo, err := git.PlainOpen(path)
+	if err != nil {
+		return false
+	}
+	wt, err := repo.Worktree()
+	if err != nil {
+		return false
+	}
+	status, err := wt.Status()
+	if err != nil {
+		return false
+	}
+	for _, s := range status {
+		if s.Staging == git.Modified {
+			return true
+		}
+	}
+	return false
+}
 func isClean() bool {
 	if !isGit() {
 		return true
+	}
+	if clean, ok := gitInfo["clean"]; ok {
+		return clean == "true"
 	}
 
 	path := rootDir()
 	repo, err := git.PlainOpen(path)
 	if err != nil {
+		gitInfo["clean"] = "true"
 		return true
 	}
 
 	wt, err := repo.Worktree()
 	if err != nil {
+		gitInfo["clean"] = "true"
 		return true
 	}
 
 	s, err := wt.Status()
 	if err != nil {
+		gitInfo["clean"] = "true"
 		return true
 	}
 
-	return s.IsClean()
+	if !s.IsClean() {
+		gitInfo["clean"] = "false"
+		return false
+	}
+
+	gitInfo["clean"] = "true"
+	return true
 }
 
 //GetSide returns the side of the Prompter
@@ -283,6 +342,50 @@ func (g Git) cleanPrompt() (string, int, error) {
 	return colorString(clean, fgColor, bgColor, g.Font), RealLen(clean), nil
 }
 
+func (g Git) untrackedPrompt() (string, int, error) {
+	if !isGit() {
+		return "", 0, nil
+	}
+	if !hasUntracked() {
+		return "", 0, nil
+	}
+
+	untracked := g.UntrackedText
+	fgColor := g.UntrackedFgColor
+	bgColor := g.UntrackedBgColor
+
+	if fgColor == "" {
+		fgColor = g.Fgcolor
+	}
+	if bgColor == "" {
+		bgColor = g.Bgcolor
+	}
+
+	return colorString(untracked, fgColor, bgColor, g.Font), RealLen(untracked), nil
+}
+
+func (g Git) stagedPrompt() (string, int, error) {
+	if !isGit() {
+		return "", 0, nil
+	}
+	if !hasStaged() {
+		return "", 0, nil
+	}
+
+	staged := g.StagedText
+	fgColor := g.StagedFgColor
+	bgColor := g.StagedBgColor
+
+	if fgColor == "" {
+		fgColor = g.Fgcolor
+	}
+	if bgColor == "" {
+		bgColor = g.Bgcolor
+	}
+
+	return colorString(staged, fgColor, bgColor, g.Font), RealLen(staged), nil
+}
+
 //Prompt return the resulting string and its real length when written
 func (g Git) Prompt() (string, int, error) {
 	if !isGit() {
@@ -298,17 +401,29 @@ func (g Git) Prompt() (string, int, error) {
 		bl = 0
 	}
 
-	cp, cl, err := g.cleanPrompt()
-	if err != nil {
-		cp = ""
-		cl = 0
-	}
-
 	tp, tl, err := g.tagPrompt()
 	if err != nil {
 		tp = ""
 		tl = 0
 	}
 
-	return before + bp + cp + tp + after, RealLen(g.Before) + bl + cl + tl + RealLen(g.After), nil
+	cp, cl, err := g.cleanPrompt()
+	if err != nil {
+		cp = ""
+		cl = 0
+	}
+
+	up, ul, err := g.untrackedPrompt()
+	if err != nil {
+		up = ""
+		ul = 0
+	}
+
+	sp, sl, err := g.stagedPrompt()
+	if err != nil {
+		sp = ""
+		sl = 0
+	}
+
+	return before + bp + tp + cp + up + sp + after, RealLen(g.Before) + bl + tl + cl + ul + sl + RealLen(g.After), nil
 }
