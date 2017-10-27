@@ -64,9 +64,6 @@ func (p *PromptItem) GetPrompt() Prompter {
 }
 
 func (l Line) String() string {
-	// start := time.Now()
-	// defer fmt.Printf("TIMING: Line.String %s\n", time.Since(start))
-
 	prompters := make([]Prompter, 0)
 	for _, v := range l.Items {
 		prompt := v

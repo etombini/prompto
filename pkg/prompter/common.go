@@ -10,7 +10,6 @@ var colorString colorStringFunc
 func SetShell(shell string) {
 	if shell == "bash" {
 		colorString = colorStringBash
-		//fmt.Printf("PROMPTER.INIT - colorString set to BASH\n")
 		return
 	}
 	if shell == "zsh" {
