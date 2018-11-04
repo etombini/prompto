@@ -23,7 +23,7 @@ func bashForegroundColor(code string) string {
 func bashBackgroundColor(code string) string {
 	c, err := strconv.Atoi(code)
 	if err == nil && c >= 0 && c < 256 {
-		return fmt.Sprintf("\\[\033[48;5;%sm\\]", code)
+		return fmt.Sprintf("\\[\\e[48;5;%sm\\]", code)
 	}
 	if color, ok := bashBackgroundColor16[code]; ok {
 		return color
