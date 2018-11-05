@@ -6,9 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"gopkg.in/src-d/go-git.v4/plumbing"
-
 	git "gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/plumbing"
 )
 
 //Git handles configuration to provide printable prompt information
@@ -182,87 +181,111 @@ func isTag() bool {
 }
 
 func hasUntracked() bool {
-	if !isGit() {
-		return false
-	}
-	path := rootDir()
-	repo, err := git.PlainOpen(path)
-	if err != nil {
-		return false
-	}
-	wt, err := repo.Worktree()
-	if err != nil {
-		return false
-	}
-	status, err := wt.Status()
-	if err != nil {
-		return false
-	}
-	for _, s := range status {
-		if s.Staging == git.Untracked || s.Worktree == git.Untracked {
-			return true
-		}
-	}
+	// start := time.Now()
+	// defer func() {
+	// 	fmt.Printf("git-hasUntracked %s\n", time.Since(start).String())
+	// }()
+
+	// if !isGit() {
+	// 	return false
+	// }
+	// path := rootDir()
+	// repo, err := git.PlainOpen(path)
+	// if err != nil {
+	// 	return false
+	// }
+
+	// idx, _ := repo.Storer.Index()
+
+	// for _, e := range idx.Entries {
+
+	// 	e.
+	// }
+
+	// wt, err := repo.Worktree()
+	// if err != nil {
+	// 	return false
+	// }
+
+	// status, err := wt.Status()
+	// if err != nil {
+	// 	return false
+	// }
+	// for _, s := range status {
+	// 	if s.Staging == git.Untracked || s.Worktree == git.Untracked {
+	// 		return true
+	// 	}
+	// }
 	return false
 }
 
 func hasStaged() bool {
-	if !isGit() {
-		return false
-	}
-	path := rootDir()
-	repo, err := git.PlainOpen(path)
-	if err != nil {
-		return false
-	}
-	wt, err := repo.Worktree()
-	if err != nil {
-		return false
-	}
-	status, err := wt.Status()
-	if err != nil {
-		return false
-	}
-	for _, s := range status {
-		if s.Staging == git.Modified {
-			return true
-		}
-	}
+	// start := time.Now()
+	// defer func() {
+	// 	fmt.Printf("git-hasStaged %s\n", time.Since(start).String())
+	// }()
+
+	// if !isGit() {
+	// 	return false
+	// }
+	// path := rootDir()
+	// repo, err := git.PlainOpen(path)
+	// if err != nil {
+	// 	return false
+	// }
+	// wt, err := repo.Worktree()
+	// if err != nil {
+	// 	return false
+	// }
+	// status, err := wt.Status()
+	// if err != nil {
+	// 	return false
+	// }
+	// for _, s := range status {
+	// 	if s.Staging == git.Modified {
+	// 		return true
+	// 	}
+	// }
 	return false
 }
+
 func isClean() bool {
-	if !isGit() {
-		return true
-	}
-	if clean, ok := gitInfo["clean"]; ok {
-		return clean == "true"
-	}
+	// if !isGit() {
+	// 	return true
+	// }
+	// if clean, ok := gitInfo["clean"]; ok {
+	// 	return clean == "true"
+	// }
 
-	path := rootDir()
-	repo, err := git.PlainOpen(path)
-	if err != nil {
-		gitInfo["clean"] = "true"
-		return true
-	}
+	// path := rootDir()
+	// repo, err := git.PlainOpen(path)
+	// if err != nil {
+	// 	gitInfo["clean"] = "true"
+	// 	return true
+	// }
 
-	wt, err := repo.Worktree()
-	if err != nil {
-		gitInfo["clean"] = "true"
-		return true
-	}
+	// wt, err := repo.Worktree()
+	// if err != nil {
+	// 	gitInfo["clean"] = "true"
+	// 	return true
+	// }
 
-	s, err := wt.Status()
-	if err != nil {
-		gitInfo["clean"] = "true"
-		return true
-	}
+	// start := time.Now()
+	// defer func() {
+	// 	fmt.Printf("git-isClean %s\n", time.Since(start).String())
+	// }()
+	// s, err := wt.Status()
+	// if err != nil {
+	// 	gitInfo["clean"] = "true"
+	// 	return true
+	// }
 
-	if !s.IsClean() {
-		gitInfo["clean"] = "false"
-		return false
-	}
+	// if !s.IsClean() {
+	// 	gitInfo["clean"] = "false"
+	// 	return false
+	// }
 
-	gitInfo["clean"] = "true"
+	// gitInfo["clean"] = "true"
 	return true
 }
 
