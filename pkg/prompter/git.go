@@ -69,7 +69,7 @@ func rootDir() string {
 			break
 		}
 		splitted := strings.Split(path, "/")
-		splitted = splitted[0 : len(splitted)-2]
+		splitted = splitted[0 : len(splitted)-1]
 		path = strings.Join(splitted, "/")
 	}
 	if !found {
