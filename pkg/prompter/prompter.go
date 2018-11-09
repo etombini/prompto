@@ -35,6 +35,7 @@ type PromptItem struct {
 	Text         Text         `yaml:"text"`
 	TextIfGit    TextIfGit    `yaml:"ifgit"`
 	TextIfNotGit TextIfNotGit `yaml:"ifnotgit"`
+	TextIfEnv    TextIfEnv    `yaml:"ifenv"`
 }
 
 //GetPrompt returns PromptItem first non nil attribute as a Prompter interface
@@ -59,6 +60,9 @@ func (p *PromptItem) GetPrompt() Prompter {
 	}
 	if p.TextIfNotGit != (TextIfNotGit{}) {
 		return p.TextIfNotGit
+	}
+	if p.TextIfEnv != (TextIfEnv{}) {
+		return p.TextIfEnv
 	}
 	return nil
 }
@@ -91,9 +95,7 @@ func (l Line) String() string {
 
 	}
 
-	if rightLength > 0 {
-		right += "\n"
-	}
+	right += "\n"
 
 	columns, _, err := terminal.GetSize(0)
 	if err != nil {
