@@ -1,13 +1,11 @@
 package prompter
 
+//This file is kept here to pursue the work around git various statuses
+
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
-
-	git "gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/plumbing"
 )
 
 //Git handles configuration to provide printable prompt information
@@ -87,98 +85,65 @@ func isGit() bool {
 	return false
 }
 
-func branch() string {
-	if !isGit() {
-		return ""
-	}
+// func tag() string {
+// 	if !isGit() {
+// 		return ""
+// 	}
+// 	if t, ok := gitInfo["tag"]; ok {
+// 		return t
+// 	}
 
-	path := rootDir()
+// 	path := rootDir()
+// 	repo, err := git.PlainOpen(path)
+// 	if err != nil {
+// 		gitInfo["tag"] = ""
+// 		return ""
+// 	}
+// 	head, err := repo.Head()
+// 	if err != nil {
+// 		gitInfo["tag"] = ""
+// 		return ""
+// 	}
 
-	headFile := filepath.Join(path, ".git/HEAD")
-	headBuf, err := ioutil.ReadFile(headFile)
-	if err != nil {
-		return ""
-	}
-	head := string(headBuf)
+// 	tt, _ := repo.Tags()
+// 	tagref := make(map[string]string)
 
-	if !strings.HasPrefix(head, "ref: refs/heads/") {
-		return string(head[:10])
-	}
+// 	tt.ForEach(func(p *plumbing.Reference) error {
+// 		to, err := repo.TagObject(p.Hash())
+// 		if err != nil {
+// 			tagref[p.Hash().String()] = strings.TrimPrefix(p.Name().String(), "refs/tags/")
+// 			return nil
+// 		}
+// 		tagref[to.Target.String()] = to.Name
+// 		return nil
+// 	})
 
-	branch := strings.TrimPrefix(head, "ref: refs/heads/")
-	if strings.HasSuffix(branch, "\n") {
-		branch = strings.TrimSuffix(branch, "\n")
-	}
+// 	if len(tagref) == 0 {
+// 		gitInfo["tag"] = ""
+// 		return ""
+// 	}
 
-	return branch
-}
+// 	headCommit, err := repo.CommitObject(head.Hash())
+// 	var theTag string
+// 	var ok bool
 
-func isBranch() bool {
-	if branch() != "" {
-		return true
-	}
-	return false
-}
+// 	for headCommit.NumParents() > 0 {
+// 		if theTag, ok = tagref[headCommit.Hash.String()]; ok {
+// 			break
+// 		}
+// 		theTag = ""
+// 		headCommit, err = repo.CommitObject(headCommit.ParentHashes[0])
+// 	}
+// 	gitInfo["tag"] = theTag
+// 	return theTag
+// }
 
-func tag() string {
-	if !isGit() {
-		return ""
-	}
-	if t, ok := gitInfo["tag"]; ok {
-		return t
-	}
-
-	path := rootDir()
-	repo, err := git.PlainOpen(path)
-	if err != nil {
-		gitInfo["tag"] = ""
-		return ""
-	}
-	head, err := repo.Head()
-	if err != nil {
-		gitInfo["tag"] = ""
-		return ""
-	}
-
-	tt, _ := repo.Tags()
-	tagref := make(map[string]string)
-
-	tt.ForEach(func(p *plumbing.Reference) error {
-		to, err := repo.TagObject(p.Hash())
-		if err != nil {
-			tagref[p.Hash().String()] = strings.TrimPrefix(p.Name().String(), "refs/tags/")
-			return nil
-		}
-		tagref[to.Target.String()] = to.Name
-		return nil
-	})
-
-	if len(tagref) == 0 {
-		gitInfo["tag"] = ""
-		return ""
-	}
-
-	headCommit, err := repo.CommitObject(head.Hash())
-	var theTag string
-	var ok bool
-
-	for headCommit.NumParents() > 0 {
-		if theTag, ok = tagref[headCommit.Hash.String()]; ok {
-			break
-		}
-		theTag = ""
-		headCommit, err = repo.CommitObject(headCommit.ParentHashes[0])
-	}
-	gitInfo["tag"] = theTag
-	return theTag
-}
-
-func isTag() bool {
-	if tag() != "" {
-		return true
-	}
-	return false
-}
+// func isTag() bool {
+// 	if tag() != "" {
+// 		return true
+// 	}
+// 	return false
+// }
 
 func hasUntracked() bool {
 	// start := time.Now()

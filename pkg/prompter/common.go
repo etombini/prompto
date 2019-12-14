@@ -6,22 +6,20 @@ type colorStringFunc func(s string, fg string, bg string, font string) string
 
 var colorString colorStringFunc
 
+var shellFuncs = map[string]colorStringFunc{
+	"bash": colorStringBash,
+	"zsh":  colorStringBlank,
+	"fish": colorStringBlank,
+}
+
 //SetShell must be used to set the shell we are dealing with and use the appropriate color functions
 func SetShell(shell string) {
-	if shell == "bash" {
-		colorString = colorStringBash
-		return
-	}
-	if shell == "zsh" {
-		colorString = colorStringBlank
-		return
-	}
-	if shell == "fish" {
-		colorString = colorStringBlank
+	f, ok := shellFuncs[shell]
+	if ok {
+		colorString = f
 		return
 	}
 	colorString = colorStringBlank
-	return
 }
 
 func colorStringBlank(s string, fg string, bg string, font string) string {

@@ -1,0 +1,67 @@
+prompters:
+- kind: hostname
+  before: "  | "
+  after: " "
+  bgcolor: blue
+  fgcolor: default
+  side: left
+- kind: text
+  content: ""
+  bgcolor: light-blue
+  fgcolor: blue
+  side: left
+- kind: "username"
+  before: "  | "
+  after: " "
+  bgcolor: light-blue
+  fgcolor: default
+  font: bold
+  side: left
+- kind: text
+  content: ""
+  bgcolor: dark-gray
+  fgcolor: light-blue
+  side: left
+- kind: path
+  before: "  | "
+  after: " "
+  mode: elided
+  bgcolor: dark-gray
+  fgcolor: default
+  separator: "/"
+  side: lef
+- kind: text
+  content: " "
+  bgcolor: default
+  fgcolor: dark-gray
+  side: left
+- kind: ifgit
+  content: ""
+  bgcolor: default
+  fgcolor: red
+  side: right
+- kind: ifgit
+  content: "  |"
+  side: right
+  bgcolor: red
+  fgcolor: white
+  font: bold
+- kind: gitbranch
+  before: "  "
+  after: " "
+  fgcolor: default
+  bgcolor: red
+  side: right
+- kind: gittag
+  before: "  "
+  after: " -"
+  fgcolor: default
+  bgcolor: red
+  side: right
+- kind: newline
+- kind: text
+  content: " • "
+  bgcolor: default
+  fgcolor: default
+  side: left
+  font: bold

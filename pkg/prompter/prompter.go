@@ -1,113 +1,124 @@
 package prompter
 
 import (
+	"bytes"
 	"fmt"
-	"os"
 	"strings"
 
 	"golang.org/x/crypto/ssh/terminal"
 )
 
-//Prompter is an interface allowing any struct to provide its parts of a prompt
+//Part is an interface allowing any struct to provide its parts of a prompt
 //It returns a string (the prompt part per se), the length on the screen (numbers of columns occupied)
 //and an error
-type Prompter interface {
-	Prompt() (string, int, error)
-	GetSide() string
+type Part interface {
+	Prompt() (string, int)
+	Side() string
+	Kind() string
+	IsNewline() bool
 }
 
-//Config is handling the top level YAML configuration which is a list of Lines
-type Config struct {
-	Lines []Line `yaml:"lines"`
+//NewPart return a part of a prompter
+func NewPart(config map[string]string) Part {
+	kind, ok := config["kind"]
+	if !ok {
+		return NewUnknown(map[string]string{"kind": "undefined"})
+	}
+
+	switch kind {
+	case "text":
+		return NewText(config)
+	case "textifenv":
+		return NewTextIfEnv(config)
+	case "username":
+		return NewUsername(config)
+	case "hostname":
+		return NewHostname(config)
+	case "path":
+		return NewPath(config)
+	case "newline":
+		return NewNewline(config)
+	case "ifgit":
+		return NewTextIfGit(config)
+	case "ifnotgit":
+		return NewTextIfNotGit(config)
+	case "gitbranch":
+		return NewGitBranch(config)
+	case "gittag":
+		return NewGitTag(config)
+	default:
+		return NewUnknown(config)
+	}
 }
 
-//Line is composed of a list of PromptItem
-type Line struct {
-	Items []PromptItem `yaml:"line"`
+//Prompter is the structure handling the final delivery of the prompt string
+type Prompter struct {
+	parts [][]Part
 }
 
-//PromptItem is meant to be used as a union, only one attribute is to be set per declaration
-type PromptItem struct {
-	Username     Username     `yaml:"username"`
-	Hostname     Hostname     `yaml:"hostname"`
-	Path         Path         `yaml:"path"`
-	Git          Git          `yaml:"git"`
-	Text         Text         `yaml:"text"`
-	TextIfGit    TextIfGit    `yaml:"ifgit"`
-	TextIfNotGit TextIfNotGit `yaml:"ifnotgit"`
-	TextIfEnv    TextIfEnv    `yaml:"ifenv"`
+//New returns a new Prompter
+func New(config []map[string]string) Prompter {
+	p := Prompter{
+		parts: make([][]Part, 0),
+	}
+
+	line := 0
+	p.parts = append(p.parts, make([]Part, 0))
+
+	for _, cfg := range config {
+		np := NewPart(cfg)
+		p.parts[line] = append(p.parts[line], np)
+		if np.IsNewline() {
+			line++
+			p.parts = append(p.parts, make([]Part, 0))
+		}
+	}
+	return p
 }
 
-//GetPrompt returns PromptItem first non nil attribute as a Prompter interface
-func (p *PromptItem) GetPrompt() Prompter {
-	if p.Username != (Username{}) {
-		return p.Username
-	}
-	if p.Hostname != (Hostname{}) {
-		return p.Hostname
-	}
-	if p.Path != (Path{}) {
-		return p.Path
-	}
-	if p.Git != (Git{}) {
-		return p.Git
-	}
-	if p.Text != (Text{}) {
-		return p.Text
-	}
-	if p.TextIfGit != (TextIfGit{}) {
-		return p.TextIfGit
-	}
-	if p.TextIfNotGit != (TextIfNotGit{}) {
-		return p.TextIfNotGit
-	}
-	if p.TextIfEnv != (TextIfEnv{}) {
-		return p.TextIfEnv
-	}
-	return nil
-}
+func (p Prompter) String() string {
 
-func (l Line) String() string {
-	prompters := make([]Prompter, 0)
-	for _, v := range l.Items {
-		prompt := v
-		prompters = append(prompters, prompt.GetPrompt())
-	}
+	lines := make([]string, 0)
 
-	var left string
-	var leftLength int
-	var right string
-	var rightLength int
+	for _, parts := range p.parts {
 
-	for _, p := range prompters {
-		prompt, len, err := p.Prompt()
+		var left bytes.Buffer
+		var leftLength int
+		var right bytes.Buffer
+		var rightLength int
+
+		for _, p := range parts {
+			prompt, len := p.Prompt()
+			if p.Side() == "left" {
+				left.WriteString(prompt)
+				leftLength += len
+			} else {
+				right.WriteString(prompt)
+				rightLength += len
+			}
+		}
+
+		columns, _, err := terminal.GetSize(0)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Can not get prompt from '%T'\n", p)
-			os.Exit(1)
-		}
-		if p.GetSide() == "left" {
-			left += prompt
-			leftLength += len
-		} else {
-			right += prompt
-			rightLength += len
+			fmt.Printf("ERROR COLUMS: %s\n", err.Error())
+			columns = 204
 		}
 
+		var padding string
+		if columns > leftLength+rightLength && rightLength > 0 {
+			padding = strings.Repeat(" ", columns-(leftLength+rightLength))
+		}
+
+		var line bytes.Buffer
+		line.WriteString(left.String())
+		line.WriteString(padding)
+		line.WriteString(right.String())
+		lines = append(lines, line.String())
 	}
+	var res bytes.Buffer
 
-	right += "\n"
-
-	columns, _, err := terminal.GetSize(0)
-	if err != nil {
-		fmt.Printf("ERROR COLUMS: %s\n", err.Error())
-		columns = 204
+	for _, line := range lines {
+		res.WriteString(line)
 	}
-
-	var padding string
-	if columns > leftLength+rightLength && rightLength > 0 {
-		padding = strings.Repeat(" ", columns-(leftLength+rightLength))
-	}
-
-	line := left + padding + right
-	return line
+	return res.String()
 }

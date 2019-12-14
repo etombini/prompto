@@ -1,7 +1,6 @@
 package prompter
 
 import (
-	"errors"
 	"os"
 	"os/user"
 	"strings"
@@ -9,23 +8,47 @@ import (
 
 //Path handles configuration to provide printable prompt information
 type Path struct {
-	Mode      string `yaml:"mode"`
-	Index     int    `yaml:"index"`
-	Side      string `yaml:"side"`
-	Before    string `yaml:"before"`
-	After     string `yaml:"after"`
-	Separator string `yaml:"separator"`
-	Bgcolor   string `yaml:"bgcolor"`
-	Fgcolor   string `yaml:"fgcolor"`
-	Font      string `yaml:"font"`
+	mode string `yaml:"mode"`
+	// Index     int    `yaml:"index"`
+	side      string `yaml:"side"`
+	before    string `yaml:"before"`
+	after     string `yaml:"after"`
+	separator string `yaml:"separator"`
+	bgcolor   string `yaml:"bgcolor"`
+	fgcolor   string `yaml:"fgcolor"`
+	font      string `yaml:"font"`
 }
 
-//GetSide returns the side of the Prompter
-func (p Path) GetSide() string {
-	if p.Side == "" || p.Side != "right" {
+//NewPath returns a Username struct
+func NewPath(param map[string]string) Path {
+	return Path{
+		side:      param["side"],
+		before:    param["before"],
+		after:     param["after"],
+		bgcolor:   param["bgcolor"],
+		fgcolor:   param["fgcolor"],
+		font:      param["font"],
+		separator: param["separator"],
+		mode:      param["mode"],
+	}
+}
+
+//Side returns the side of the Prompter
+func (p Path) Side() string {
+	if p.side == "" || p.side != "right" {
 		return "left"
 	}
 	return "right"
+}
+
+//Kind return the kind of part
+func (p Path) Kind() string {
+	return "path"
+}
+
+//IsNewline tells if this part requires a newline to be inserted
+func (p Path) IsNewline() bool {
+	return false
 }
 
 var mode = map[string]bool{
@@ -75,14 +98,14 @@ func pathInitial(path string) string {
 }
 
 //Prompt return the resulting string and its real length when written
-func (p Path) Prompt() (string, int, error) {
+func (p Path) Prompt() (string, int) {
 	wd, err := os.Getwd()
 	if err != nil {
-		return "NO CWD", len("NO CWD"), errors.New("Can not get current working dir")
+		return "NO CWD", len("NO CWD")
 	}
 
 	var path string
-	switch p.Mode {
+	switch p.mode {
 	case "short":
 		path = pathShort(wd)
 	case "elided":
@@ -94,10 +117,10 @@ func (p Path) Prompt() (string, int, error) {
 	}
 
 	splitted := strings.Split(path, "/")
-	if p.Separator != "" {
-		path = strings.Join(splitted, p.Separator)
+	if p.separator != "" {
+		path = strings.Join(splitted, p.separator)
 	}
 
-	path = p.Before + path + p.After
-	return colorString(path, p.Fgcolor, p.Bgcolor, p.Font), RealLen(path), nil
+	path = p.before + path + p.after
+	return colorString(path, p.fgcolor, p.bgcolor, p.font), RealLen(path)
 }
