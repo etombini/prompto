@@ -10,7 +10,6 @@ prompters:
   bgcolor: blue
   fgcolor: default
   kind: username
-
 - before: "  | "
   after: " "
   mode: elided
