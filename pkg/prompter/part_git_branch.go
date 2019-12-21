@@ -8,23 +8,13 @@ import (
 
 //GitBranch handles configuration to provide printable prompt information
 type GitBranch struct {
-	before  string `yaml:"before"`
-	after   string `yaml:"after"`
-	fgcolor string `yaml:"fgcolor"`
-	bgcolor string `yaml:"bgcolor"`
-	font    string `yaml:"font"`
-	side    string
+	PartCommon
 }
 
 //NewGitBranch returns a GitBranch struct
 func NewGitBranch(param map[string]string) GitBranch {
 	return GitBranch{
-		side:    param["side"],
-		before:  param["before"],
-		after:   param["after"],
-		bgcolor: param["bgcolor"],
-		fgcolor: param["fgcolor"],
-		font:    param["font"],
+		PartCommon: NewPartCommon(param),
 	}
 }
 
@@ -87,5 +77,5 @@ func (g GitBranch) Prompt() (string, int) {
 
 	b := g.before + branch() + g.after
 
-	return colorString(b, g.fgcolor, g.bgcolor, g.font), RealLen(b)
+	return colorStringANSI(b, g.fgcolor, g.bgcolor, g.font), RealLen(b)
 }

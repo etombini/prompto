@@ -281,7 +281,7 @@ func (g Git) branchPrompt() (string, int, error) {
 		b = g.BranchBefore + b + g.BranchAfter
 	}
 
-	return colorString(b, fgColor, bgColor, g.Font), RealLen(b), nil
+	return colorStringANSI(b, fgColor, bgColor, g.Font), RealLen(b), nil
 }
 
 func (g Git) tagPrompt() (string, int, error) {
@@ -303,7 +303,7 @@ func (g Git) tagPrompt() (string, int, error) {
 		t = g.TagBefore + t + g.TagAfter
 	}
 
-	return colorString(t, fgColor, bgColor, g.Font), RealLen(t), nil
+	return colorStringANSI(t, fgColor, bgColor, g.Font), RealLen(t), nil
 }
 
 func (g Git) cleanPrompt() (string, int, error) {
@@ -327,7 +327,7 @@ func (g Git) cleanPrompt() (string, int, error) {
 		bgColor = g.Bgcolor
 	}
 
-	return colorString(clean, fgColor, bgColor, g.Font), RealLen(clean), nil
+	return colorStringANSI(clean, fgColor, bgColor, g.Font), RealLen(clean), nil
 }
 
 func (g Git) untrackedPrompt() (string, int, error) {
@@ -349,7 +349,7 @@ func (g Git) untrackedPrompt() (string, int, error) {
 		bgColor = g.Bgcolor
 	}
 
-	return colorString(untracked, fgColor, bgColor, g.Font), RealLen(untracked), nil
+	return colorStringANSI(untracked, fgColor, bgColor, g.Font), RealLen(untracked), nil
 }
 
 func (g Git) stagedPrompt() (string, int, error) {
@@ -371,7 +371,7 @@ func (g Git) stagedPrompt() (string, int, error) {
 		bgColor = g.Bgcolor
 	}
 
-	return colorString(staged, fgColor, bgColor, g.Font), RealLen(staged), nil
+	return colorStringANSI(staged, fgColor, bgColor, g.Font), RealLen(staged), nil
 }
 
 //Prompt return the resulting string and its real length when written
@@ -380,8 +380,8 @@ func (g Git) Prompt() (string, int, error) {
 		return "", 0, nil
 	}
 
-	before := colorString(g.Before, g.Fgcolor, g.Bgcolor, g.Font)
-	after := colorString(g.After, g.Fgcolor, g.Bgcolor, g.Font)
+	before := colorStringANSI(g.Before, g.Fgcolor, g.Bgcolor, g.Font)
+	after := colorStringANSI(g.After, g.Fgcolor, g.Bgcolor, g.Font)
 
 	bp, bl, err := g.branchPrompt()
 	if err != nil {

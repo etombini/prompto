@@ -4,25 +4,26 @@ import (
 	"os/user"
 )
 
+// // Username handles configuration to provide printable prompt information
+// type Username struct {
+// 	side    string `yaml:"side"`
+// 	before  string `yaml:"before"`
+// 	after   string `yaml:"after"`
+// 	bgcolor string `yaml:"bgcolor"`
+// 	fgcolor string `yaml:"fgcolor"`
+// 	font    string `yaml:"font"`
+// }
+
 // Username handles configuration to provide printable prompt information
 type Username struct {
-	side    string `yaml:"side"`
-	before  string `yaml:"before"`
-	after   string `yaml:"after"`
-	bgcolor string `yaml:"bgcolor"`
-	fgcolor string `yaml:"fgcolor"`
-	font    string `yaml:"font"`
+	PartCommon
 }
+
 
 //NewUsername returns a Username struct
 func NewUsername(param map[string]string) Username {
 	return Username{
-		side:    param["side"],
-		before:  param["before"],
-		after:   param["after"],
-		bgcolor: param["bgcolor"],
-		fgcolor: param["fgcolor"],
-		font:    param["font"],
+		PartCommon: NewPartCommon(param),
 	}
 }
 
@@ -51,5 +52,5 @@ func (u Username) Prompt() (string, int) {
 		return "USERNAME", len("USERNAME")
 	}
 	username := u.before + user.Username + u.after
-	return colorString(username, u.fgcolor, u.bgcolor, u.font), RealLen(username)
+	return colorStringANSI(username, u.fgcolor, u.bgcolor, u.font), RealLen(username)
 }

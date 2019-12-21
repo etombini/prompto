@@ -5,34 +5,34 @@ import (
 	"strconv"
 )
 
-func colorStringBash(s string, fg string, bg string, font string) string {
-	return bashForegroundColor(fg) + bashBackgroundColor(bg) + s + bashFont["reset"]
+func colorStringANSI(s string, fg string, bg string, font string) string {
+	return ansiForegroundColor(fg) + ansiBackgroundColor(bg) + s + ansiFont["reset"]
 }
 
-func bashForegroundColor(code string) string {
+func ansiForegroundColor(code string) string {
 	c, err := strconv.Atoi(code)
 	if err == nil && c >= 0 && c < 256 {
 		return fmt.Sprintf("\\[\\e[38;5;%dm\\]", c)
 	}
-	if color, ok := bashForegroundColor16[code]; ok {
+	if color, ok := ansiForegroundColor16[code]; ok {
 		return color
 	}
 	return ""
 }
 
-func bashBackgroundColor(code string) string {
+func ansiBackgroundColor(code string) string {
 	c, err := strconv.Atoi(code)
 	if err == nil && c >= 0 && c < 256 {
 		return fmt.Sprintf("\\[\\e[48;5;%sm\\]", code)
 	}
-	if color, ok := bashBackgroundColor16[code]; ok {
+	if color, ok := ansiBackgroundColor16[code]; ok {
 		return color
 	}
 	return ""
 }
 
-//bashForegroundColor16 is a map associating a 16 color name with its ANSI escape sequence
-var bashForegroundColor16 = map[string]string{
+//ansiForegroundColor16 is a map associating a 16 color name with its ANSI escape sequence
+var ansiForegroundColor16 = map[string]string{
 	"default":       "\\[\\e[39m\\]",
 	"black":         "\\[\\e[30m\\]",
 	"red":           "\\[\\e[31m\\]",
@@ -52,8 +52,8 @@ var bashForegroundColor16 = map[string]string{
 	"white":         "\\[\\e[97m\\]",
 }
 
-//bashBackgroundColor16 is a map associating a 16 color name with its ANSI escape sequence
-var bashBackgroundColor16 = map[string]string{
+//ansiBackgroundColor16 is a map associating a 16 color name with its ANSI escape sequence
+var ansiBackgroundColor16 = map[string]string{
 	"default":       "\\[\\e[49m\\]",
 	"black":         "\\[\\e[40m\\]",
 	"red":           "\\[\\e[41m\\]",
@@ -73,10 +73,10 @@ var bashBackgroundColor16 = map[string]string{
 	"white":         "\\[\\e[107m\\]",
 }
 
-var bashReset = "\\[\\e[0m\\]"
+var ansiReset = "\\[\\e[0m\\]"
 
-//bashFont is a map associating font format with its ANSI escape sequence to
-var bashFont = map[string]string{
+//ansiFont is a map associating font format with its ANSI escape sequence to
+var ansiFont = map[string]string{
 	"default":   "\\[\\e[22m\\]",
 	"reset":     "\\[\\e[0m\\]",
 	"bold":      "\\[\\e[1m\\]",

@@ -8,28 +8,17 @@ import (
 
 //Path handles configuration to provide printable prompt information
 type Path struct {
-	mode string `yaml:"mode"`
-	// Index     int    `yaml:"index"`
-	side      string `yaml:"side"`
-	before    string `yaml:"before"`
-	after     string `yaml:"after"`
+	PartCommon
+	mode      string `yaml:"mode"`
 	separator string `yaml:"separator"`
-	bgcolor   string `yaml:"bgcolor"`
-	fgcolor   string `yaml:"fgcolor"`
-	font      string `yaml:"font"`
 }
 
 //NewPath returns a Username struct
 func NewPath(param map[string]string) Path {
 	return Path{
-		side:      param["side"],
-		before:    param["before"],
-		after:     param["after"],
-		bgcolor:   param["bgcolor"],
-		fgcolor:   param["fgcolor"],
-		font:      param["font"],
-		separator: param["separator"],
-		mode:      param["mode"],
+		PartCommon: NewPartCommon(param),
+		separator:  param["separator"],
+		mode:       param["mode"],
 	}
 }
 
@@ -122,5 +111,5 @@ func (p Path) Prompt() (string, int) {
 	}
 
 	path = p.before + path + p.after
-	return colorString(path, p.fgcolor, p.bgcolor, p.font), RealLen(path)
+	return colorStringANSI(path, p.fgcolor, p.bgcolor, p.font), RealLen(path)
 }

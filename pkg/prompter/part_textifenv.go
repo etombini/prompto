@@ -6,23 +6,17 @@ import (
 
 //TextIfEnv handles configuration to provide printable prompt information
 type TextIfEnv struct {
+	PartCommon
 	env     string `yaml:"env"`
 	content string `yaml:"content"`
-	side    string `yaml:"side"`
-	bgcolor string `yaml:"bgcolor"`
-	fgcolor string `yaml:"fgcolor"`
-	font    string `yaml:"font"`
 }
 
 //NewTextIfEnv returns a TextIfEnv struct
 func NewTextIfEnv(param map[string]string) TextIfEnv {
 	return TextIfEnv{
-		side:    param["side"],
-		bgcolor: param["bgcolor"],
-		fgcolor: param["fgcolor"],
-		font:    param["font"],
-		env:     param["env"],
-		content: param["content"],
+		PartCommon: NewPartCommon(param),
+		env:        param["env"],
+		content:    param["content"],
 	}
 }
 
@@ -50,11 +44,8 @@ func (t TextIfEnv) Prompt() (string, int) {
 		return "", 0
 	}
 	text := Text{
-		content: t.content,
-		side:    t.side,
-		bgcolor: t.bgcolor,
-		fgcolor: t.fgcolor,
-		font:    t.font,
+		PartCommon: t.PartCommon,
+		content:    t.content,
 	}
 	return text.Prompt()
 }

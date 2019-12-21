@@ -29,7 +29,7 @@ func loadConfig(f string) (PromptoConfig, error) {
 }
 
 func usage() {
-	fmt.Printf("Usage : prompto shell configuration_file\n")
+	fmt.Printf("Usage : prompto configuration_file\n")
 }
 
 var help = map[string]bool{
@@ -39,7 +39,7 @@ var help = map[string]bool{
 }
 
 func main() {
-	if len(os.Args) != 3 {
+	if len(os.Args) != 2 {
 		usage()
 		os.Exit(1)
 	}
@@ -49,9 +49,9 @@ func main() {
 		os.Exit(0)
 	}
 
-	prompter.SetShell(os.Args[1])
+	// prompter.SetShell(os.Args[1])
 
-	y, err := loadConfig(os.Args[2])
+	y, err := loadConfig(os.Args[1])
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "can not load configuration from %s: %s\n", os.Args[1], err)
 		os.Exit(1)

@@ -4,15 +4,15 @@ import "fmt"
 
 //Unknown handles unknown kind of prompter parts
 type Unknown struct {
-	side string
+	PartCommon
 	kind string
 }
 
 //NewUnknown return a new Unknown struct
 func NewUnknown(config map[string]string) Unknown {
 	return Unknown{
-		side: config["side"],
-		kind: config["kind"],
+		PartCommon: NewPartCommon(config),
+		kind:       config["kind"],
 	}
 }
 

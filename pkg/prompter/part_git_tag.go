@@ -9,23 +9,13 @@ import (
 
 //GitTag handles configuration to provide printable prompt information
 type GitTag struct {
-	before  string `yaml:"before"`
-	after   string `yaml:"after"`
-	fgcolor string `yaml:"fgcolor"`
-	bgcolor string `yaml:"bgcolor"`
-	font    string `yaml:"font"`
-	side    string
+	PartCommon
 }
 
 //NewGitTag returns a GitTag struct
 func NewGitTag(param map[string]string) GitTag {
 	return GitTag{
-		side:    param["side"],
-		before:  param["before"],
-		after:   param["after"],
-		bgcolor: param["bgcolor"],
-		fgcolor: param["fgcolor"],
-		font:    param["font"],
+		PartCommon: NewPartCommon(param),
 	}
 }
 
@@ -113,5 +103,5 @@ func (g GitTag) Prompt() (string, int) {
 		return "", 0
 	}
 	t := g.before + tag() + g.after
-	return colorString(t, g.fgcolor, g.bgcolor, g.font), RealLen(t)
+	return colorStringANSI(t, g.fgcolor, g.bgcolor, g.font), RealLen(t)
 }
