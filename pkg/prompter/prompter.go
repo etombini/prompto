@@ -46,6 +46,8 @@ func NewPart(config map[string]string) Part {
 		return NewGitBranch(config)
 	case "gittag":
 		return NewGitTag(config)
+	case "command":
+		return NewCommand(config)
 	default:
 		return NewUnknown(config)
 	}

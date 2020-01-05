@@ -59,7 +59,7 @@ The yaml file describes a set of prompters composing your final prompt. Each pro
 - `kind`: the definition of the behavior.
 - `font`: the font to use. Available keywords depends on your terminal. 
 - `bgcolor`/`fgcolor`: the background/foreground color, accepting 8bits color code or equivalent name.
-- `brefore`/`after`: any content to be put before/after the expected behavior.
+- `before`/`after`: any content to be put before/after the expected behavior.
 - `side`: the side of the screen to put the final content (left if not set).
 
 Each prompter is set up in the order the appear, being "pushed" on the appropriate side as they are defined. 
@@ -73,8 +73,9 @@ Defined behaviours:
 - `textifgit`: content to be displayed if in a git repository (same configuration as `text`).
 - `textifnotgit`: content to be displayed if not in a git repository (same configuration as `text`).
 - `textifenv`: content to be displayed if a specific environment variable (`env`) is displayed (same configuration as `text`).
-- `git_branch`: branch name if in a git repository
+- `git_branch`: branch name if in a git repository.
 - `git_tag`: tag name if in a git repository. If no tag is defined, `before` and `after` are not displayed
+- `command`: the result of the execution of a `command` (without leading/trailing spaces/newline). If the `timeout` (in ms) is reached, it prints "TIMEOUT". If any error happens, the error is explicitely printed.
 
 # Example
 
