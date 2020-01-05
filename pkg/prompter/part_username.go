@@ -4,21 +4,10 @@ import (
 	"os/user"
 )
 
-// // Username handles configuration to provide printable prompt information
-// type Username struct {
-// 	side    string `yaml:"side"`
-// 	before  string `yaml:"before"`
-// 	after   string `yaml:"after"`
-// 	bgcolor string `yaml:"bgcolor"`
-// 	fgcolor string `yaml:"fgcolor"`
-// 	font    string `yaml:"font"`
-// }
-
-// Username handles configuration to provide printable prompt information
+//Username handles configuration to provide printable prompt information
 type Username struct {
 	PartCommon
 }
-
 
 //NewUsername returns a Username struct
 func NewUsername(param map[string]string) Username {
