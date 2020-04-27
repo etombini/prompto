@@ -49,8 +49,6 @@ func main() {
 		os.Exit(0)
 	}
 
-	// prompter.SetShell(os.Args[1])
-
 	y, err := loadConfig(os.Args[1])
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "can not load configuration from %s: %s\n", os.Args[1], err)
