@@ -30,6 +30,9 @@ prompters:
   fgcolor: default
   separator: "/"
   side: lef
+- kind: textifenv
+  env: SHELL
+  text: "GOTTA SHELL!!!"
 - kind: text
   content: " "
   bgcolor: default
