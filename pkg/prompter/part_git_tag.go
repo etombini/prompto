@@ -39,7 +39,10 @@ func tag() string {
 		return ""
 	}
 
-	tt, _ := repo.Tags()
+	tt, err := repo.Tags()
+	if err != nil {
+		return ""
+	}
 	tagref := make(map[string]string)
 
 	tt.ForEach(func(p *plumbing.Reference) error {
