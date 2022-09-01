@@ -70,11 +70,12 @@ Defined behaviours:
 - `text`: plain text you want to set up. It adds a `content` configuration item and `before`/`after` are deactivated
 - `path`: the current path. You can set up the `separator` to be used, and the display `mode` (`default`, `short`, `elided`, `initial`).
 - `newline`: put a newline to have multiple lines in your prompt. Prompters configured after will appear on a new line. 
-- `textifgit`: content to be displayed if in a git repository (same configuration as `text`).
-- `textifnotgit`: content to be displayed if not in a git repository (same configuration as `text`).
+- `ifgit`: content to be displayed if in a git repository (same configuration as `text`).
+- `ifnotgit`: content to be displayed if not in a git repository (same configuration as `text`).
 - `textifenv`: content to be displayed if a specific environment variable (`env`) is displayed (same configuration as `text`).
-- `git_branch`: branch name if in a git repository.
-- `git_tag`: tag name if in a git repository. If no tag is defined, `before` and `after` are not displayed
+- `gitrepo`: repository name (basename of the current git root) 
+- `gitbranch`: branch name if in a git repository.
+- `gittag`: tag name if in a git repository. If no tag is defined, `before` and `after` are not displayed
 - `command`: the result of the execution of a `command` (without leading/trailing spaces/newline). If the `timeout` (in ms) is reached, it prints "TIMEOUT". If any error happens, the error is explicitely printed.
 
 # Example
