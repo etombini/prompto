@@ -8,9 +8,9 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 )
 
-//Part is an interface allowing any struct to provide its parts of a prompt
-//It returns a string (the prompt part per se), the length on the screen (numbers of columns occupied)
-//and an error
+// Part is an interface allowing any struct to provide its parts of a prompt
+// It returns a string (the prompt part per se), the length on the screen (numbers of columns occupied)
+// and an error
 type Part interface {
 	Prompt() (string, int)
 	Side() string
@@ -18,7 +18,7 @@ type Part interface {
 	IsNewline() bool
 }
 
-//NewPart return a part of a prompter
+// NewPart return a part of a prompter
 func NewPart(config map[string]string) Part {
 	kind, ok := config["kind"]
 	if !ok {
@@ -42,6 +42,8 @@ func NewPart(config map[string]string) Part {
 		return NewTextIfGit(config)
 	case "ifnotgit":
 		return NewTextIfNotGit(config)
+	case "gitrepo":
+		return NewGitRepo(config)
 	case "gitbranch":
 		return NewGitBranch(config)
 	case "gittag":
@@ -53,12 +55,12 @@ func NewPart(config map[string]string) Part {
 	}
 }
 
-//Prompter is the structure handling the final delivery of the prompt string
+// Prompter is the structure handling the final delivery of the prompt string
 type Prompter struct {
 	parts [][]Part
 }
 
-//New returns a new Prompter
+// New returns a new Prompter
 func New(config []map[string]string) Prompter {
 	p := Prompter{
 		parts: make([][]Part, 0),
