@@ -71,3 +71,7 @@ prompters:
   fgcolor: default
   side: left
   font: bold
+- kind: status_success
+  content: " STATUS SUCCESS "
+- kind: status_fail
+  content: " STATUS FAILED "

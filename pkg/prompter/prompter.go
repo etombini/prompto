@@ -50,6 +50,10 @@ func NewPart(config map[string]string) Part {
 		return NewGitTag(config)
 	case "command":
 		return NewCommand(config)
+	case "status_success":
+		return NewStatusSuccess(config)
+	case "status_fail":
+		return NewStatusFail(config)
 	default:
 		return NewUnknown(config)
 	}

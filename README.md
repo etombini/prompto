@@ -24,7 +24,7 @@ Somewhere in your `$HOME/.bashrc` (or any file your `.barshrc` loads), write the
 
 ```shell 
 function _update_ps1(){
-    PS1="$(/path/to/prompto /path/to/your/.prompto.yaml)"
+    PS1="$(export STATUS=$?; /path/to/prompto /path/to/your/.prompto.yaml)"
 }
 
 
